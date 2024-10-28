@@ -21,17 +21,13 @@ public class WhatUpService {
         // AIService를 통해 GPT에 전력 소비 데이터 요청
         String gptResponse = aiService.generatePowerConsumptionData(taskType);
 
-        // GPT 응답 파싱
         try {
-            // GPT의 응답에서 JSON 객체를 추출
+            // GPT의 응답에서 JSON 객체를 직접 파싱
             JsonNode rootNode = objectMapper.readTree(gptResponse);
-            JsonNode powerDataNode = rootNode.path("choices").get(0).path("message").path("content");
 
-            // powerDataNode의 JSON 문자열을 다시 JsonNode로 변환
-            JsonNode powerDataJson = objectMapper.readTree(powerDataNode.asText());
-            JsonNode powerDataArray = powerDataJson.path("powerData");
-            int fps = powerDataJson.path("fps").asInt();
-
+            // "powerData" 배열과 fps 값 추출
+            JsonNode powerDataArray = rootNode.path("powerData");
+            int fps = rootNode.path("fps").asInt();
 
             // 전력 소비 차트 데이터를 리스트로 변환
             List<PowerDataPoint> powerData = new ArrayList<>();
@@ -41,6 +37,7 @@ public class WhatUpService {
                 powerData.add(new PowerDataPoint(time, power));
             }
 
+            // PowerConsumptionResponse 객체를 생성하여 반환
             return new PowerConsumptionResponse(powerData, fps, taskType);
 
         } catch (Exception e) {

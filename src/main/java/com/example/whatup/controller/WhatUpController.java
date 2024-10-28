@@ -18,7 +18,7 @@ public class WhatUpController {
     private final WhatUpService whatUpService;
 
     @GetMapping("/generate")
-    public ResponseEntity<PowerConsumptionResponse> getPowerConsumptionData(@RequestParam String taskType) {
+    public ResponseEntity<PowerConsumptionResponse> getPowerConsumptionData(@RequestParam(name = "taskType") String taskType) {
         PowerConsumptionResponse response = whatUpService.generatePowerConsumptionData(taskType);
         return ResponseEntity.ok(response);
     }
